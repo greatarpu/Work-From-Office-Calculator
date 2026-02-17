@@ -2,39 +2,91 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>WFO 60% Calculator</title>
 
     <!-- Tailwind CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-
-    <!-- jQuery -->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
-<body class="bg-gradient-to-br from-indigo-500 to-purple-600 min-h-screen flex items-center justify-center">
 
-    <div class="bg-white shadow-2xl rounded-2xl p-8 w-96">
+<body class="bg-gradient-to-br from-indigo-500 to-purple-600 min-h-screen flex items-center justify-center px-4">
 
-        <h2 class="text-2xl font-bold text-center text-gray-800 mb-6">
+    <div class="w-full max-w-md bg-white rounded-3xl shadow-2xl p-6 sm:p-8">
+
+        <h1 class="text-2xl font-bold text-center text-gray-800 mb-6">
             WFO 60% Calculator
-        </h2>
+        </h1>
 
-        <!-- Total Working Days -->
+        <!-- Working Days -->
         <div class="mb-4">
-            <label class="block text-gray-600 mb-1">Total Working Days</label>
+            <label class="block text-gray-600 mb-2">Total Working Days</label>
             <input 
                 type="number" 
                 id="workingDays"
-                class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-400 focus:outline-none"
-                placeholder="e.g. 20">
+                class="w-full px-4 py-3 rounded-xl border focus:ring-2 focus:ring-indigo-400 focus:outline-none text-lg"
+                placeholder="Enter total working days">
         </div>
 
         <!-- Leave Days -->
         <div class="mb-4">
-            <label class="block text-gray-600 mb-1">Planned Leave Days</label>
+            <label class="block text-gray-600 mb-2">Planned Leave Days</label>
             <input 
                 type="number" 
                 id="leaveDays"
-                class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-purple-400 focus:outline-none"
+                class="w-full px-4 py-3 rounded-xl border focus:ring-2 focus:ring-purple-400 focus:outline-none text-lg"
+                placeholder="Enter leave days">
+        </div>
+
+        <!-- Result Card -->
+        <div id="resultCard" class="hidden mt-6 p-4 rounded-2xl bg-indigo-50 text-center">
+            <p class="text-gray-700 text-sm">Required WFO Days (60%)</p>
+            <p id="result" class="text-3xl font-bold text-indigo-600 mt-1"></p>
+        </div>
+
+        <!-- Error -->
+        <p id="error" class="text-red-500 text-sm text-center mt-3 hidden"></p>
+
+    </div>
+
+<script>
+    const workingInput = document.getElementById("workingDays");
+    const leaveInput = document.getElementById("leaveDays");
+    const result = document.getElementById("result");
+    const resultCard = document.getElementById("resultCard");
+    const error = document.getElementById("error");
+
+    function calculate() {
+        let totalDays = parseInt(workingInput.value);
+        let leaveDays = parseInt(leaveInput.value);
+
+        if (!totalDays || totalDays <= 0) {
+            resultCard.classList.add("hidden");
+            error.classList.add("hidden");
+            return;
+        }
+
+        if (leaveDays < 0 || leaveDays > totalDays) {
+            resultCard.classList.add("hidden");
+            error.textContent = "Leave days cannot exceed working days.";
+            error.classList.remove("hidden");
+            return;
+        }
+
+        error.classList.add("hidden");
+
+        let effectiveDays = totalDays - (leaveDays || 0);
+        let requiredWFO = Math.floor(effectiveDays * 0.6);
+
+        result.textContent = requiredWFO + " Days";
+        resultCard.classList.remove("hidden");
+    }
+
+    workingInput.addEventListener("input", calculate);
+    leaveInput.addEventListener("input", calculate);
+</script>
+
+</body>
+</html>                class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-purple-400 focus:outline-none"
                 placeholder="e.g. 2">
         </div>
 
