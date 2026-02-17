@@ -8,51 +8,115 @@
 
 <body class="bg-gradient-to-br from-indigo-500 to-purple-600 min-h-screen flex items-center justify-center px-4">
 
-  <div class="bg-white w-full max-w-sm p-6 rounded-2xl shadow-xl">
+  <div class="bg-white w-full max-w-sm p-6 rounded-2xl shadow-xl relative">
 
     <h2 class="text-xl font-bold text-center mb-6">
       WFO 60% Calculator
     </h2>
 
+    <!-- Working Days -->
     <div class="mb-4">
       <label class="block mb-2 text-sm">Total Working Days</label>
       <input id="working" type="number" class="w-full p-3 border rounded-lg">
     </div>
 
+    <!-- Leave Days -->
     <div class="mb-4">
       <label class="block mb-2 text-sm">Leave Days</label>
       <input id="leave" type="number" class="w-full p-3 border rounded-lg">
     </div>
 
-    <div id="resultBox" class="hidden mt-4 p-4 bg-indigo-100 rounded-xl text-center">
-      <p class="text-sm">Required WFO Days</p>
-      <p id="result" class="text-2xl font-bold text-indigo-700"></p>
-    </div>
+    <!-- Overview Button -->
+    <button id="overviewBtn"
+      class="mt-4 w-full bg-indigo-600 text-white py-2 rounded-lg text-sm font-semibold hover:bg-indigo-700 transition">
+      📊 Monthly Overview
+    </button>
 
+  </div>
+
+  <!-- Modal -->
+  <div id="modal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center px-4">
+    
+    <div class="bg-white w-full max-w-md p-6 rounded-2xl shadow-2xl relative">
+      
+      <h3 class="text-lg font-bold mb-4 text-center">
+        Monthly Overview
+      </h3>
+
+      <div id="modalContent" class="text-sm text-gray-700 space-y-2"></div>
+
+      <button id="closeModal"
+        class="mt-6 w-full bg-red-500 text-white py-2 rounded-lg hover:bg-red-600 transition">
+        Close
+      </button>
+    </div>
   </div>
 
 <script>
   const working = document.getElementById("working");
   const leave = document.getElementById("leave");
-  const result = document.getElementById("result");
-  const resultBox = document.getElementById("resultBox");
+  const overviewBtn = document.getElementById("overviewBtn");
+  const modal = document.getElementById("modal");
+  const modalContent = document.getElementById("modalContent");
+  const closeModal = document.getElementById("closeModal");
 
-  function calculate() {
+  overviewBtn.addEventListener("click", function() {
+
     let total = parseInt(working.value);
     let leaveDays = parseInt(leave.value) || 0;
 
     if (!total || leaveDays > total) {
-      resultBox.classList.add("hidden");
+      alert("Please enter valid working and leave days.");
       return;
     }
 
-    let required = Math.floor((total - leaveDays) * 0.6);
-    result.textContent = required + " Days";
-    resultBox.classList.remove("hidden");
-  }
+    let effective = total - leaveDays;
+    let required = Math.floor(effective * 0.6);
 
-  working.addEventListener("input", calculate);
-  leave.addEventListener("input", calculate);
+    let previousRequired = null;
+    let message = "";
+
+    if (leaveDays > 0) {
+      let prevEffective = total - (leaveDays - 1);
+      previousRequired = Math.floor(prevEffective * 0.6);
+    }
+
+    message += `<p>Total Working Days: <b>${total}</b></p>`;
+    message += `<p>Leaves Taken: <b>${leaveDays}</b></p>`;
+    message += `<p class="text-indigo-600 font-semibold mt-2">
+                You need to attend office for ${required} days.
+               </p>`;
+
+    if (previousRequired !== null) {
+      if (required === previousRequired) {
+        message += `<p class="text-orange-500">
+                    ⚠ No change from previous leave. Still ${required} days required.
+                   </p>`;
+      } else {
+        message += `<p class="text-green-600">
+                    ✔ Reduced from ${previousRequired} to ${required} days.
+                   </p>`;
+      }
+    }
+
+    modalContent.innerHTML = message;
+    modal.classList.remove("hidden");
+    modal.classList.add("flex");
+  });
+
+  closeModal.addEventListener("click", function() {
+    modal.classList.add("hidden");
+    modal.classList.remove("flex");
+  });
+
+  // Close modal when clicking outside
+  modal.addEventListener("click", function(e) {
+    if (e.target === modal) {
+      modal.classList.add("hidden");
+      modal.classList.remove("flex");
+    }
+  });
+
 </script>
 
 </body>
