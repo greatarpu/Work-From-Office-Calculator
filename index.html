@@ -1,12 +1,94 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Work From Office Calculator</title>
+    <title>WFO 60% Calculator</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: #f4f6f8;
+        }
+        .card {
+            background: #fff;
+            padding: 20px;
+            max-width: 400px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        input, select, button {
+            width: 100%;
+            padding: 8px;
+            margin-top: 10px;
+        }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        .result {
+            margin-top: 15px;
+            font-weight: bold;
+            color: green;
+        }
+    </style>
 </head>
 <body>
-    <h1>Welcome to the Work From Office Calculator</h1>
-    <p>This is a basic HTML page.</p>
+
+<div class="card">
+    <h3>WFO 60% Calculator</h3>
+
+    <label>Select Month</label>
+    <select id="month">
+        <option>January</option>
+        <option>February</option>
+        <option>March</option>
+        <option>April</option>
+        <option>May</option>
+        <option>June</option>
+        <option>July</option>
+        <option>August</option>
+        <option>September</option>
+        <option>October</option>
+        <option>November</option>
+        <option>December</option>
+    </select>
+
+    <label>Total Working Days</label>
+    <input type="number" id="workingDays" placeholder="Enter total working days">
+
+    <label>Planned Leave Days</label>
+    <input type="number" id="leaveDays" placeholder="Enter leave days">
+
+    <button id="calculate">Calculate WFO Days</button>
+
+    <div class="result" id="result"></div>
+</div>
+
+<script>
+    $("#calculate").click(function() {
+        var totalDays = parseInt($("#workingDays").val());
+        var leaveDays = parseInt($("#leaveDays").val());
+
+        if (isNaN(totalDays) || isNaN(leaveDays) || leaveDays > totalDays) {
+            $("#result").html("Please enter valid numbers.");
+            return;
+        }
+
+        var effectiveDays = totalDays - leaveDays;
+        var requiredWFO = Math.floor(effectiveDays * 0.6);
+
+        $("#result").html(
+            "For " + $("#month").val() + 
+            ", you need to attend office for <b>" + requiredWFO + 
+            "</b> days to maintain 60%."
+        );
+    });
+</script>
+
 </body>
 </html>
